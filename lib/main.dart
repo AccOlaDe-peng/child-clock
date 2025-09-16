@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'dart:async';
 
 void main() {
@@ -13,9 +16,80 @@ class ChildClockApp extends StatelessWidget {
     return MaterialApp(
       title: '儿童时钟',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6750A4),
+          brightness: Brightness.light,
+        ),
         useMaterial3: true,
-        fontFamily: 'monospace', // 使用等宽字体模拟数字时钟
+        textTheme: GoogleFonts.robotoTextTheme(),
+        appBarTheme: AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.black87,
+          titleTextStyle: GoogleFonts.roboto(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          elevation: 4,
+          shape: CircleBorder(),
+        ),
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF6750A4),
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+        textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
+        appBarTheme: AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.white,
+          titleTextStyle: GoogleFonts.roboto(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: const BorderRadius.all(Radius.circular(16)),
+          ),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          elevation: 4,
+          shape: CircleBorder(),
+        ),
       ),
       home: const MainClockPage(),
     );
@@ -40,6 +114,8 @@ class _MainClockPageState extends State<MainClockPage> {
   int _totalCountdownSeconds = 0;
   bool _isCountdownRunning = false;
   bool _isCountdownPaused = false;
+  int _customMinutes = 0;
+  int _customSeconds = 0;
   
   // 闹钟相关变量
   TimeOfDay _alarmTime = const TimeOfDay(hour: 20, minute: 0);
@@ -110,31 +186,45 @@ class _MainClockPageState extends State<MainClockPage> {
           _buildSettingsInterface(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue.shade600,
-        unselectedItemColor: Colors.grey.shade600,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: '时钟',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.timer),
-            label: '定时',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: '设置',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: NavigationBar(
+          selectedIndex: _currentIndex,
+          onDestinationSelected: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          backgroundColor: Colors.white,
+          elevation: 0,
+          height: 70,
+          labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          destinations: [
+            NavigationDestination(
+              icon: Icon(MdiIcons.clockOutline),
+              selectedIcon: Icon(MdiIcons.clock, color: Colors.blue.shade600),
+              label: '时钟',
+            ),
+            NavigationDestination(
+              icon: Icon(MdiIcons.timerOutline),
+              selectedIcon: Icon(MdiIcons.timer, color: Colors.blue.shade600),
+              label: '定时',
+            ),
+            NavigationDestination(
+              icon: Icon(MdiIcons.cogOutline),
+              selectedIcon: Icon(MdiIcons.cog, color: Colors.blue.shade600),
+              label: '设置',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -149,13 +239,40 @@ class _MainClockPageState extends State<MainClockPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(
-                  Icons.battery_full,
-                  color: Colors.grey.shade600,
-                  size: 20,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.battery_full,
+                        color: Colors.green.shade600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '100%',
+                        style: GoogleFonts.roboto(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
+            ).animate().fadeIn(duration: 500.ms),
             const SizedBox(height: 20),
             
             // 主时钟显示
@@ -163,70 +280,130 @@ class _MainClockPageState extends State<MainClockPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 时间显示
-                  Text(
-                    _formatTime(_currentTime),
-                    style: const TextStyle(
-                      fontSize: 80,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontFamily: 'monospace',
+                  // 时间显示 - 添加动画效果
+                  Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                  ),
-                  
-                  // 上午/下午标识
-                  Text(
-                    _getAmPm(_currentTime),
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 40),
-                  
-                  // 日期和星期信息
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      // 闹钟信息
-                      Row(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(24),
+                        gradient: LinearGradient(
+                          colors: [Colors.white, Colors.blue.shade50],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Column(
                         children: [
-                          Icon(
-                            Icons.alarm,
-                            color: Colors.grey.shade600,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
                           Text(
-                            '3天 上午 20:00',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
+                            _formatTime(_currentTime),
+                            style: GoogleFonts.robotoMono(
+                              fontSize: 80,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
+                          ),
+                          
+                          // 上午/下午标识
+                          Container(
+                            margin: const EdgeInsets.only(top: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade100,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Text(
+                              _getAmPm(_currentTime),
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.blue.shade800,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      
-                      // 日期
-                      Text(
-                        _formatDate(_currentTime),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
+                    ),
+                  ).animate().fadeIn(duration: 600.ms).scale(),
+                  
+                  const SizedBox(height: 40),
+                  
+                  // 日期和星期信息
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // 闹钟信息
+                          Row(
+                            children: [
+                              Icon(
+                                MdiIcons.alarmCheck,
+                                color: Colors.orange.shade600,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                '3天 上午 20:00',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                          
+                          Container(
+                            height: 24,
+                            width: 1,
+                            color: Colors.grey.shade300,
+                          ),
+                          
+                          // 日期和星期
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    MdiIcons.calendarMonth,
+                                    color: Colors.blue.shade600,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _formatDate(_currentTime),
+                                    style: GoogleFonts.roboto(
+                                      fontSize: 14,
+                                      color: Colors.grey.shade700,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatWeekday(_currentTime),
+                                style: GoogleFonts.roboto(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      
-                      // 星期
-                      Text(
-                        _formatWeekday(_currentTime),
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, end: 0),
                 ],
               ),
             ),
@@ -246,13 +423,40 @@ class _MainClockPageState extends State<MainClockPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Icon(
-                  Icons.battery_full,
-                  color: Colors.grey.shade600,
-                  size: 20,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.battery_full,
+                        color: Colors.green.shade600,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '100%',
+                        style: GoogleFonts.roboto(
+                          fontSize: 12,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
-            ),
+            ).animate().fadeIn(duration: 500.ms),
             const SizedBox(height: 40),
             
             // 倒计时显示
@@ -260,101 +464,229 @@ class _MainClockPageState extends State<MainClockPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 圆形进度条
-                  SizedBox(
-                    width: 200,
-                    height: 200,
+                  // 圆形进度条 - 按照图片设计，美化样式
+                  Container(
+                    width: 300,
+                    height: 300,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 8),
+                        ),
+                        BoxShadow(
+                          color: Colors.red.withOpacity(0.2),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
                     child: Stack(
+                      alignment: Alignment.center,
                       children: [
-                        // 背景圆环
-                        CircularProgressIndicator(
-                          value: 1.0,
-                          strokeWidth: 8,
-                          backgroundColor: Colors.grey.shade300,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade300),
+                        // 外层装饰圆环
+                        Container(
+                          width: 300,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.white,
+                                Colors.grey.shade100,
+                              ],
+                              stops: const [0.7, 1.0],
+                            ),
+                          ),
                         ),
-                        // 进度圆环
-                        CircularProgressIndicator(
-                          value: _totalCountdownSeconds > 0 ? _countdownSeconds / _totalCountdownSeconds : 0.0,
-                          strokeWidth: 8,
-                          backgroundColor: Colors.transparent,
-                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.red),
+                        // 背景圆环 - 浅灰色
+                        SizedBox(
+                          width: 280,
+                          height: 280,
+                          child: CircularProgressIndicator(
+                            value: 1.0,
+                            strokeWidth: 16,
+                            backgroundColor: Colors.grey.shade200,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade200),
+                          ),
                         ),
-                        // 中心时间显示
-                        Center(
+                        // 进度圆环 - 红色渐变，按照图片样式
+                        SizedBox(
+                          width: 280,
+                          height: 280,
+                          child: CircularProgressIndicator(
+                            value: _totalCountdownSeconds > 0 ? (_totalCountdownSeconds - _countdownSeconds) / _totalCountdownSeconds : 0.0,
+                            strokeWidth: 16,
+                            backgroundColor: Colors.transparent,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              _countdownSeconds > 0 ? Colors.red : Colors.grey.shade400,
+                            ),
+                          ),
+                        ),
+                        // 中心时间显示 - 大字体，黑色，时钟样式
+                        Container(
+                          width: 200,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.05),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              // 时间显示 - 时钟样式
                               Text(
                                 _formatCountdownTime(_countdownSeconds),
-                                style: const TextStyle(
-                                  fontSize: 36,
+                                style: GoogleFonts.robotoMono(
+                                  fontSize: 48,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontFamily: 'monospace',
+                                  color: Colors.black87,
+                                  letterSpacing: 2,
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              Icon(
-                                _isCountdownRunning ? Icons.hourglass_bottom : Icons.hourglass_empty,
-                                color: Colors.grey.shade600,
-                                size: 20,
+                              // 沙漏图标
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  MdiIcons.timerSand,
+                                  color: Colors.red.shade600,
+                                  size: 32,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              // 状态文字
+                              Text(
+                                _isCountdownRunning 
+                                    ? (_isCountdownPaused ? '已暂停' : '倒计时中')
+                                    : '准备就绪',
+                                style: GoogleFonts.roboto(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
                         ),
                       ],
                     ),
-                  ),
+                  ).animate().fadeIn(duration: 600.ms).scale(),
                   
                   const SizedBox(height: 40),
                   
                   // 控制按钮
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton.icon(
-                        onPressed: _isCountdownRunning ? null : _startCountdown,
-                        icon: const Icon(Icons.play_arrow),
-                        label: const Text('开始'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
+                  Card(
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton.icon(
+                            onPressed: _isCountdownRunning ? null : _startCountdown,
+                            icon: Icon(MdiIcons.play),
+                            label: const Text('开始'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: _isCountdownRunning ? _pauseCountdown : null,
+                            icon: Icon(_isCountdownPaused ? MdiIcons.play : MdiIcons.pause),
+                            label: Text(_isCountdownPaused ? '继续' : '暂停'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            onPressed: _isCountdownRunning ? _stopCountdown : null,
+                            icon: Icon(MdiIcons.stop),
+                            label: const Text('停止'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      ElevatedButton.icon(
-                        onPressed: _isCountdownRunning ? _pauseCountdown : null,
-                        icon: Icon(_isCountdownPaused ? Icons.play_arrow : Icons.pause),
-                        label: Text(_isCountdownPaused ? '继续' : '暂停'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.orange,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                      ElevatedButton.icon(
-                        onPressed: _isCountdownRunning ? _stopCountdown : null,
-                        icon: const Icon(Icons.stop),
-                        label: const Text('停止'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ).animate().fadeIn(duration: 700.ms).slideY(begin: 0.2, end: 0),
                   
                   const SizedBox(height: 20),
                   
-                  // 设置倒计时时间按钮
-                  ElevatedButton.icon(
-                    onPressed: _setCountdownTime,
-                    icon: const Icon(Icons.timer),
-                    label: const Text('设置时间'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
+                  // 时间设置按钮
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // 快速设置按钮
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _setCountdownTime,
+                          icon: Icon(MdiIcons.clockTimeEight),
+                          label: const Text('快速设置'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade600,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      // 自定义时间设置按钮
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _showCustomTimeDialog,
+                          icon: Icon(MdiIcons.clockEdit),
+                          label: const Text('自定义时间'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.purple.shade600,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, end: 0),
                 ],
               ),
             ),
@@ -535,27 +867,36 @@ class _MainClockPageState extends State<MainClockPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('设置倒计时时间'),
+        title: Row(
+          children: [
+            Icon(MdiIcons.timer, color: Colors.blue.shade600),
+            const SizedBox(width: 8),
+            const Text('设置倒计时时间'),
+          ],
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('请选择倒计时时间：'),
+            Text(
+              '请选择倒计时时间（最多1小时）：',
+              style: GoogleFonts.roboto(
+                fontSize: 16,
+                color: Colors.grey.shade700,
+              ),
+            ),
             const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              alignment: WrapAlignment.center,
               children: [
                 _buildTimeButton('5分钟', 5 * 60),
                 _buildTimeButton('10分钟', 10 * 60),
                 _buildTimeButton('15分钟', 15 * 60),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
+                _buildTimeButton('20分钟', 20 * 60),
                 _buildTimeButton('30分钟', 30 * 60),
+                _buildTimeButton('45分钟', 45 * 60),
                 _buildTimeButton('1小时', 60 * 60),
-                _buildTimeButton('2小时', 2 * 60 * 60),
               ],
             ),
           ],
@@ -602,6 +943,176 @@ class _MainClockPageState extends State<MainClockPage> {
   
   void _setCountdownTime() {
     _showCountdownTimeDialog();
+  }
+
+  void _showCustomTimeDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Row(
+                children: [
+                  Icon(MdiIcons.clockEdit, color: Colors.purple.shade600),
+                  const SizedBox(width: 8),
+                  const Text('自定义时间'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '设置自定义倒计时时间（最多1小时）：',
+                    style: GoogleFonts.roboto(
+                      fontSize: 16,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              '分钟',
+                              style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: DropdownButton<int>(
+                                value: _customMinutes,
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: List.generate(61, (index) => index)
+                                    .map((value) => DropdownMenuItem(
+                                          value: value,
+                                          child: Text('$value'),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _customMinutes = value ?? 0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Text(
+                              '秒',
+                              style: GoogleFonts.roboto(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey.shade300),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: DropdownButton<int>(
+                                value: _customSeconds,
+                                isExpanded: true,
+                                underline: const SizedBox(),
+                                items: List.generate(60, (index) => index)
+                                    .map((value) => DropdownMenuItem(
+                                          value: value,
+                                          child: Text('$value'),
+                                        ))
+                                    .toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _customSeconds = value ?? 0;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.blue.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(MdiIcons.information, color: Colors.blue.shade600, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '总时间：${_formatCountdownTime(_customMinutes * 60 + _customSeconds)}',
+                            style: GoogleFonts.roboto(
+                              fontSize: 14,
+                              color: Colors.blue.shade700,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('取消'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final totalSeconds = _customMinutes * 60 + _customSeconds;
+                    if (totalSeconds > 0 && totalSeconds <= 3600) { // 限制最大1小时
+                      setState(() {
+                        _countdownSeconds = totalSeconds;
+                        _totalCountdownSeconds = totalSeconds;
+                        _isCountdownRunning = false;
+                        _isCountdownPaused = false;
+                      });
+                      Navigator.of(context).pop();
+                    } else if (totalSeconds > 3600) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('倒计时时间不能超过1小时'),
+                          backgroundColor: Colors.red.shade600,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('确定'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
   
   // 闹钟相关方法
