@@ -235,19 +235,20 @@ class _MainClockPageState extends State<MainClockPage> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // 电池图标
+            // 顶部状态栏
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // 日期信息
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.blue.shade50,
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
+                        color: Colors.blue.withOpacity(0.1),
+                        blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
                     ],
@@ -255,7 +256,40 @@ class _MainClockPageState extends State<MainClockPage> {
                   child: Row(
                     children: [
                       Icon(
-                        Icons.battery_full,
+                        MdiIcons.calendarMonth,
+                        color: Colors.blue.shade700,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _formatDate(_currentTime),
+                        style: GoogleFonts.roboto(
+                          fontSize: 14,
+                          color: Colors.blue.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // 电池状态
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade50,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.green.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        MdiIcons.batteryHigh,
                         color: Colors.green.shade600,
                         size: 20,
                       ),
@@ -264,8 +298,8 @@ class _MainClockPageState extends State<MainClockPage> {
                         '100%',
                         style: GoogleFonts.roboto(
                           fontSize: 12,
-                          color: Colors.grey.shade700,
-                          fontWeight: FontWeight.w500,
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -273,135 +307,171 @@ class _MainClockPageState extends State<MainClockPage> {
                 ),
               ],
             ).animate().fadeIn(duration: 500.ms),
-            const SizedBox(height: 20),
             
             // 主时钟显示
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 时间显示 - 添加动画效果
-                  Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 30),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(24),
-                        gradient: LinearGradient(
-                          colors: [Colors.white, Colors.blue.shade50],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
+                  // 时钟卡片
+                  Container(
+                    width: 340,
+                    padding: const EdgeInsets.symmetric(vertical: 40),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(32),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 20,
+                          spreadRadius: 5,
+                          offset: const Offset(0, 10),
                         ),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            _formatTime(_currentTime),
-                            style: GoogleFonts.robotoMono(
-                              fontSize: 80,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          
-                          // 上午/下午标识
-                          Container(
-                            margin: const EdgeInsets.only(top: 8),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.blue.shade100,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Text(
-                              _getAmPm(_currentTime),
-                              style: GoogleFonts.roboto(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.blue.shade800,
-                              ),
-                            ),
-                          ),
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.1),
+                          blurRadius: 60,
+                          spreadRadius: -10,
+                          offset: const Offset(0, 20),
+                        ),
+                      ],
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white,
+                          Colors.blue.shade50.withOpacity(0.5),
+                          Colors.white,
                         ],
                       ),
+                    ),
+                    child: Column(
+                      children: [
+                        // 星期显示
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.purple.shade50,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            _formatWeekday(_currentTime),
+                            style: GoogleFonts.roboto(
+                              fontSize: 16,
+                              color: Colors.purple.shade700,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        // 时间显示
+                        Text(
+                          _formatTime(_currentTime),
+                          style: GoogleFonts.robotoMono(
+                            fontSize: 86,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                            letterSpacing: -2,
+                            height: 1,
+                          ),
+                        ).animate(
+                          onPlay: (controller) => controller.repeat(),
+                        ).shimmer(
+                          duration: 3.seconds,
+                          color: Colors.blue.shade100,
+                        ),
+                        const SizedBox(height: 20),
+                        // 上午/下午标识
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blue.shade400,
+                                Colors.blue.shade600,
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.blue.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            _getAmPm(_currentTime),
+                            style: GoogleFonts.roboto(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              letterSpacing: 1,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ).animate().fadeIn(duration: 600.ms).scale(),
                   
                   const SizedBox(height: 40),
                   
-                  // 日期和星期信息
-                  Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          // 闹钟信息
-                          Row(
-                            children: [
-                              Icon(
-                                MdiIcons.alarmCheck,
-                                color: Colors.orange.shade600,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                '3天 上午 20:00',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade700,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          
-                          Container(
-                            height: 24,
-                            width: 1,
-                            color: Colors.grey.shade300,
-                          ),
-                          
-                          // 日期和星期
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    MdiIcons.calendarMonth,
-                                    color: Colors.blue.shade600,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    _formatDate(_currentTime),
-                                    style: GoogleFonts.roboto(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade700,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _formatWeekday(_currentTime),
-                                style: GoogleFonts.roboto(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade600,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                  // 闹钟信息卡片
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.orange.shade200,
+                        width: 1,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.orange.withOpacity(0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            MdiIcons.alarmCheck,
+                            color: Colors.orange.shade600,
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '下次闹钟',
+                              style: GoogleFonts.roboto(
+                                fontSize: 12,
+                                color: Colors.orange.shade800,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '3天 上午 20:00',
+                              style: GoogleFonts.roboto(
+                                fontSize: 16,
+                                color: Colors.orange.shade900,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, end: 0),
                 ],
